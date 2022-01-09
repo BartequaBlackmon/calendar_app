@@ -1,6 +1,6 @@
 # Planner
 
-## Description##
+## Description 
 
 A personal planner that is used to store personal information and task.
 
