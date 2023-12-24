@@ -28,6 +28,11 @@ body {
   }
   #container {
     width: 770px;
+    border-width: 100%;
+    border-style: solid;
+    border-color: #92a1d1;
+
+
   }
   #weekdays {
     width: 100%;
