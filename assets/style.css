@@ -2,13 +2,13 @@ body {
     display: flex;
     margin-top: 50px;
     justify-content: center;
-    background-color: #FFFCFF;
+    background-color: #fdfcff;
   }
   button {
     width: 75px;
     cursor: pointer;
     box-shadow: 0px 0px 2px gray;
-    border: none;
+    border-spacing: solid;
     outline: none;
     padding: 5px;
     border-radius: 5px;
