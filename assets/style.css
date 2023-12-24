@@ -38,10 +38,12 @@ body {
     width: 100%;
     display: flex;
     color: #247BA0;
+    background-color: #d36c6c;
   }
   #weekdays div {
     width: 100px;
     padding: 10px;
+    background-color: #92a1d1;
   }
   #calendar {
     width: 100%;
