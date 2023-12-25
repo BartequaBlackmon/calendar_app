@@ -27,13 +27,18 @@ body {
     background-color:#92a1d1;
   }
   #container {
-    width: 770px;
+    width: 100px;
     border-width: 100%;
     border-style: solid;
     border-color: #92a1d1;
-
-
   }
+
+  #month {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
   #weekdays {
     width: 100%;
     display: flex;
