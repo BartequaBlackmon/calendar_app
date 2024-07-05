@@ -2,11 +2,23 @@
 
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
+let events = JSON.parse(localStorage.getItem('events')) || [];
 
 const monthDisplay = document.getElementById('monthDisplay');
 const calendar = document.getElementById('calendar');
 const backButton = document.getElementById('backButton');
 const nextButton = document.getElementById('nextButton');
+const saveButton = document.getElementById('saveButton');
+const cancelButton = document.getElementById('cancelButton');
+const modalBackDrop = document.getElementById('modalBackDrop');
+const newEventModal = document.getElementById('newEventModal');
+const eventTitleInput = document.getElementById('eventTitleInput');
+const eventDateInput = document.getElementById('eventDateInput');
+
+const deleteEventModal = document.getElementById('deleteEventModal');
+const deleteButton = document.getElementById('deleteButton');
+const closeButton = document.getElementById('closeButton');
+const eventText = document.getElementById('eventText');
 
 const months = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -20,39 +32,80 @@ function loadCalendar(month, year) {
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  // Add blank days for the first week
   for (let i = 0; i < firstDay; i++) {
     const emptyCell = document.createElement('div');
     emptyCell.classList.add('empty-cell');
     calendar.appendChild(emptyCell);
   }
 
-  // Add days of the month
   for (let day = 1; day <= daysInMonth; day++) {
     const dayCell = document.createElement('div');
     dayCell.classList.add('day');
     dayCell.textContent = day;
     calendar.appendChild(dayCell);
 
-    // Add event listener for opening the new event modal
-    dayCell.addEventListener('click', () => {
-      openNewEventModal(day);
+    const eventsForDay = events.filter(e => {
+      const eventDate = new Date(e.date);
+      return eventDate.getDate() === day && eventDate.getMonth() === month && eventDate.getFullYear() === year;
     });
+
+    eventsForDay.forEach(event => {
+      const eventDiv = document.createElement('div');
+      eventDiv.classList.add('event');
+      eventDiv.textContent = event.title;
+
+      const deleteButton = document.createElement('button');
+      deleteButton.textContent = 'Delete';
+      deleteButton.addEventListener('click', () => openDeleteEventModal(event));
+
+      eventDiv.appendChild(deleteButton);
+      dayCell.appendChild(eventDiv);
+    });
+
+    dayCell.addEventListener('click', () => openNewEventModal(day, month, year));
   }
 }
 
-function openNewEventModal(day) {
-  const newEventModal = document.getElementById('newEventModal');
-  const modalBackDrop = document.getElementById('modalBackDrop');
+function openNewEventModal(day, month, year) {
   newEventModal.style.display = 'block';
   modalBackDrop.style.display = 'block';
-  // Additional logic to handle event creation
+  eventDateInput.value = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
 function closeModals() {
-  document.getElementById('newEventModal').style.display = 'none';
-  document.getElementById('deleteEventModal').style.display = 'none';
-  document.getElementById('modalBackDrop').style.display = 'none';
+  newEventModal.style.display = 'none';
+  deleteEventModal.style.display = 'none';
+  modalBackDrop.style.display = 'none';
+}
+
+function saveEvent() {
+  const eventTitle = eventTitleInput.value;
+  const eventDate = eventDateInput.value;
+
+  if (!eventTitle || !eventDate) {
+    alert("Please provide both event title and date");
+    return;
+  }
+
+  events.push({ title: eventTitle, date: eventDate });
+  localStorage.setItem('events', JSON.stringify(events));
+  closeModals();
+  loadCalendar(currentMonth, currentYear);
+}
+
+function openDeleteEventModal(event) {
+  deleteEventModal.style.display = 'block';
+  modalBackDrop.style.display = 'block';
+  eventText.textContent = event.title;
+
+  deleteButton.onclick = () => deleteEvent(event);
+}
+
+function deleteEvent(event) {
+  events = events.filter(e => e !== event);
+  localStorage.setItem('events', JSON.stringify(events));
+  closeModals();
+  loadCalendar(currentMonth, currentYear);
 }
 
 backButton.addEventListener('click', () => {
@@ -73,7 +126,9 @@ nextButton.addEventListener('click', () => {
   loadCalendar(currentMonth, currentYear);
 });
 
-document.getElementById('cancelButton').addEventListener('click', closeModals);
-document.getElementById('closeButton').addEventListener('click', closeModals);
+saveButton.addEventListener('click', saveEvent);
+cancelButton.addEventListener('click', closeModals);
+modalBackDrop.addEventListener('click', closeModals);
+closeButton.addEventListener('click', closeModals);
 
 loadCalendar(currentMonth, currentYear);
