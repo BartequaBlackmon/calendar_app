@@ -1,134 +1,79 @@
-let nav = 0;
-let clicked = null;
-let events = localStorage.getItem('events') ? JSON.parse(localStorage.getItem('events')) : [];
+// script.js
 
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+
+const monthDisplay = document.getElementById('monthDisplay');
 const calendar = document.getElementById('calendar');
-const newEvenModal = document.getElementById('newEventModal');
-const deleteEventModal = document.getElementById('deleteEventModal');
-const backDrop = document.getElementById('modalBackDrop');
-const eventTitleInput = document.getElementById('eventTitleInput');
-const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const backButton = document.getElementById('backButton');
+const nextButton = document.getElementById('nextButton');
 
-function openModal(date) {
-    clicked = date;
+const months = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
 
-    const eventForDay = events.find(e => e.date === clicked);
+function loadCalendar(month, year) {
+  calendar.innerHTML = '';
+  monthDisplay.textContent = `${months[month]} ${year}`;
 
-    if (eventForDay) {
-      document.getElementById('eventText').innerText = eventForDay.title;
-      deleteEventModal.style.display = 'block';
-    }else {
-      newEvenModal.style.display = 'block';
-    }
-
-    backDrop.style.display = 'block';
-}
-
-function load() {
-  const dt = new Date();
-  
-  if (nav !== 0) {
-    dt.setMonth(new Date().getMonth() + nav);
-  }
-
-  const day = dt.getDate();
-  const month = dt.getMonth();
-  const year = dt.getFullYear();
-
-  const firstDayOfMonth = new Date(year, month, 1);
+  const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  const dateString = firstDayOfMonth.toLocaleDateString('en-us', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric'
-  });
-  const paddingDays = weekdays.indexOf(dateString.split(', ')[0]);
-
-  document.getElementById('monthDisplay').innerText =
-    `${dt.toLocaleDateString('en-us', { month: 'long' })} ${year}`;
-
-  calendar.innerHTML = '';
-
-  for(let i = 1; i <= paddingDays + daysInMonth; i++) {
-    const daySquare = document.createElement('div');
-    daySquare.classList.add('day');
-
-    const dayString = `${month + 1}/${i - paddingDays}/${year}`;
-
-    if(i > paddingDays) {
-      daySquare.innerText = i - paddingDays;
-      const eventForDay = events.find(e => e.date === dayString);
-
-      if (i - paddingDays === day && nav === 0) {
-        daySquare.id = 'currentDay';
-      }
-
-      if (eventForDay) {
-          const eventDiv = document.createElement('div');
-          eventDiv.classList.add('event');
-          eventDiv.innerText = eventForDay.title;
-          daySquare.appendChild(eventDiv);
-      }
-
-     daySquare.addEventListener('click', () => openModal(dayString));
-    }else {
-        daySquare.classList.add('padding');
-    }
-
-    calendar.appendChild(daySquare);
+  // Add blank days for the first week
+  for (let i = 0; i < firstDay; i++) {
+    const emptyCell = document.createElement('div');
+    emptyCell.classList.add('empty-cell');
+    calendar.appendChild(emptyCell);
   }
-} 
 
-function closeModal() {
-   eventTitleInput.classList.remove('error');
-   newEvenModal.style.display = 'none';
-   deleteEventModal.style.display = 'none';
-   backDrop.style.display = 'none';
-   eventTitleInput.value = '';
-   clicked = null;
-   load();
-}
+  // Add days of the month
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dayCell = document.createElement('div');
+    dayCell.classList.add('day');
+    dayCell.textContent = day;
+    calendar.appendChild(dayCell);
 
-function saveEvent() {
-  if (eventTitleInput.value) {
-    eventTitleInput.classList.remove('error');
-
-   events.push({
-     date: clicked,
-     title: eventTitleInput.value,
-   });
-
-   localStorage.setItem('events', JSON.stringify(events));
-   closeModal();
-  }else {
-    eventTitleInput.classList.add('error');
+    // Add event listener for opening the new event modal
+    dayCell.addEventListener('click', () => {
+      openNewEventModal(day);
+    });
   }
 }
 
-function deleteEvent() {
-    events = events.filter(e => e.date !== clicked);
-    localStorage.setItem('events', JSON.stringify(events));
-    closeModal();
+function openNewEventModal(day) {
+  const newEventModal = document.getElementById('newEventModal');
+  const modalBackDrop = document.getElementById('modalBackDrop');
+  newEventModal.style.display = 'block';
+  modalBackDrop.style.display = 'block';
+  // Additional logic to handle event creation
 }
 
-function initButtons() {
-  document.getElementById('nextButton').addEventListener('click', () => {
-    nav++;
-    load();
-  });
-
-  document.getElementById('backButton').addEventListener('click', () => {
-    nav--;
-    load();
-  });
-
-  document.getElementById('saveButton').addEventListener('click', saveEvent);
-  document.getElementById('cancelButton').addEventListener('click', closeModal);
-  document.getElementById('deleteButton').addEventListener('click', deleteEvent);
-  document.getElementById('closeButton').addEventListener('click', closeModal);
+function closeModals() {
+  document.getElementById('newEventModal').style.display = 'none';
+  document.getElementById('deleteEventModal').style.display = 'none';
+  document.getElementById('modalBackDrop').style.display = 'none';
 }
 
-initButtons();
-load();
+backButton.addEventListener('click', () => {
+  currentMonth--;
+  if (currentMonth < 0) {
+    currentMonth = 11;
+    currentYear--;
+  }
+  loadCalendar(currentMonth, currentYear);
+});
+
+nextButton.addEventListener('click', () => {
+  currentMonth++;
+  if (currentMonth > 11) {
+    currentMonth = 0;
+    currentYear++;
+  }
+  loadCalendar(currentMonth, currentYear);
+});
+
+document.getElementById('cancelButton').addEventListener('click', closeModals);
+document.getElementById('closeButton').addEventListener('click', closeModals);
+
+loadCalendar(currentMonth, currentYear);

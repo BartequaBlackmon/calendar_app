@@ -2,54 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="description" content="Calendar application to manage your events">
+  <meta name="author" content="Your Name">
   <title>Calendar App</title>
 
   <link rel="stylesheet" href="./assets/style.css">
 </head>
-<body>
 
+<body>
   <div id="container">
     <div id="header">
-      <div id="monthDisplay"></div>
+      <div id="monthDisplay" aria-live="polite"></div>
       <div>
-        <button id="backButton">Back</button>
-        <button id="nextButton">Next</button>
+        <button id="backButton" aria-label="Previous Month">Back</button>
+        <button id="nextButton" aria-label="Next Month">Next</button>
       </div>
     </div>
 
-    <div id="weekdays">
-      <div>Sunday</div>
-      <div>Monday</div>
-      <div>Tuesday</div>
-      <div>Wednesday</div>
-      <div>Thursday</div>
-      <div>Friday</div>
-      <div>Saturday</div>
+    <div id="weekdays" role="row">
+      <div role="columnheader">Sunday</div>
+      <div role="columnheader">Monday</div>
+      <div role="columnheader">Tuesday</div>
+      <div role="columnheader">Wednesday</div>
+      <div role="columnheader">Thursday</div>
+      <div role="columnheader">Friday</div>
+      <div role="columnheader">Saturday</div>
     </div>
 
-    <div id="calendar"></div>
+    <div id="calendar" role="grid"></div>
   </div>
 
-  <div id="newEventModal">
-    <h2>New Event</h2>
-
-    <input id="eventTitleInput" placeholder="Event Title" />
-
-    <button id="saveButton">Save</button>
-    <button id="cancelButton">Cancel</button>
+  <div id="newEventModal" role="dialog" aria-labelledby="newEventModalTitle" aria-hidden="true">
+    <h2 id="newEventModalTitle">New Event</h2>
+    <input id="eventTitleInput" placeholder="Event Title" aria-label="Event Title" />
+    <button id="saveButton" aria-label="Save Event">Save</button>
+    <button id="cancelButton" aria-label="Cancel">Cancel</button>
   </div>
 
-  <div id="deleteEventModal">
-    <h2>Event</h2>
-
+  <div id="deleteEventModal" role="dialog" aria-labelledby="deleteEventModalTitle" aria-hidden="true">
+    <h2 id="deleteEventModalTitle">Event</h2>
     <p id="eventText"></p>
-
-    <button id="deleteButton">Delete</button>
-    <button id="closeButton">Close</button>
+    <button id="deleteButton" aria-label="Delete Event">Delete</button>
+    <button id="closeButton" aria-label="Close">Close</button>
   </div>
 
-  <div id="modalBackDrop"></div>
+  <div id="modalBackDrop" aria-hidden="true"></div>
 
   <script src="./assets/script.js"></script>
 </body>
